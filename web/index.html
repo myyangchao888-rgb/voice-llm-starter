@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Voice LLM Starter v0.5</title>
+  <title>Voice LLM Starter v0.6 (RAG)</title>
   <link rel="stylesheet" href="/web/style.css"/>
 </head>
 <body>
   <div class="container">
-    <h1>Voice LLM Starter v0.5</h1>
-    <p>基于 HTML 的实时（近实时）语音对话 Demo。支持阿里云（DashScope OpenAI 兼容）、OpenAI、Ollama/LM Studio 等。</p>
+    <h1>Voice LLM Starter v0.6（含知识库检索）</h1>
+    <p>支持阿里云 DashScope（OpenAI 兼容）、OpenAI、Ollama、LM Studio；支持本地/云端 ASR、离线 TTS；新增 <b>知识库（RAG）</b>。</p>
 
     <div class="controls">
       <label>Provider
@@ -32,8 +32,19 @@
           <option value="pyttsx3">pyttsx3 (local)</option>
         </select>
       </label>
+      <label><input type="checkbox" id="kb"> 使用知识库</label>
+      <label>TopK <input id="kb_topk" type="number" value="4" min="1" max="10"/></label>
       <button id="apply">应用设置</button>
       <button id="reset">重置会话</button>
+    </div>
+
+    <div class="kb-ingest">
+      <div>
+        <b>导入到知识库</b>（支持 .txt / .md / .pdf；自动分段）
+      </div>
+      <input id="files" type="file" multiple/>
+      <button id="ingest">上传并索引</button>
+      <span id="ingest-status"></span>
     </div>
 
     <div class="chat">
@@ -41,7 +52,7 @@
     </div>
 
     <div class="input-row">
-      <input id="text" placeholder="输入文字后按 Enter 发送；或点击🎤开始录音"/>
+      <input id="text" placeholder="输入后按 Enter；或点击🎤录音"/>
       <button id="send">发送</button>
       <button id="record">🎤 按一下开始/结束</button>
     </div>

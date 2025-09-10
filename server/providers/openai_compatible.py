@@ -1,5 +1,4 @@
-import os
-from typing import Dict, List, Generator, Any, Optional
+from typing import Dict, List, Generator
 from openai import OpenAI
 from .base import LLMProvider
 
@@ -12,14 +11,11 @@ class OpenAICompatibleProvider(LLMProvider):
         return self._name
 
     def stream_chat(self, messages: List[Dict[str, str]], model: str, **kwargs) -> Generator[str, None, None]:
-        # kwargs may include temperature, top_p, etc.
-        # The OpenAI Python SDK v1+ supports streaming via iterating over the response.
-        # We normalize messages (role/content) into the format Chat Completions expects.
         stream = self.client.chat.completions.create(
             model=model,
             messages=messages,
             stream=True,
-            temperature=kwargs.get("temperature", 0.7),
+            temperature=kwargs.get("temperature", 0.3),
             top_p=kwargs.get("top_p", 1.0),
         )
         for chunk in stream:

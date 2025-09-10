@@ -6,7 +6,7 @@ body {
   color: #e5e7eb;
 }
 .container {
-  max-width: 900px;
+  max-width: 980px;
   margin: 24px auto;
   padding: 16px;
   background: #0f172a;
@@ -14,14 +14,14 @@ body {
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 h1 { margin-top: 0; }
-.controls {
+.controls, .kb-ingest {
   display: grid;
-  grid-template-columns: repeat(4, 1fr) auto auto;
+  grid-template-columns: repeat(5, 1fr) auto auto;
   gap: 12px;
   align-items: end;
   margin-bottom: 16px;
 }
-.controls label { display: grid; gap: 6px; font-size: 14px; }
+.controls label, .kb-ingest label { display: grid; gap: 6px; font-size: 14px; }
 .controls input, .controls select {
   padding: 8px 10px;
   border-radius: 8px;
@@ -29,7 +29,7 @@ h1 { margin-top: 0; }
   background: #0b1220;
   color: #e5e7eb;
 }
-.controls button {
+.controls button, .kb-ingest button {
   padding: 10px 14px;
   border-radius: 10px;
   background: #1d4ed8;
@@ -37,19 +37,23 @@ h1 { margin-top: 0; }
   color: white;
   cursor: pointer;
 }
-.controls button:hover { filter: brightness(1.05); }
+.controls button:hover, .kb-ingest button:hover { filter: brightness(1.05); }
+.kb-ingest {
+  grid-template-columns: 1fr auto auto auto;
+}
+.kb-ingest #ingest-status { align-self: center; }
 .chat {
-  height: 420px;
+  height: 440px;
   overflow: auto;
   background: #0b1220;
   border: 1px solid #1f2937;
   border-radius: 10px;
   padding: 12px;
 }
-.msg { margin: 8px 0; max-width: 80%; padding: 8px 10px; border-radius: 10px; line-height: 1.45; }
+.msg { margin: 8px 0; max-width: 80%; padding: 8px 10px; border-radius: 10px; line-height: 1.5; white-space: pre-wrap;}
 .msg.user { background: #0ea5e9; color:#05121a; margin-left: auto; }
 .msg.bot { background: #111827; }
-.msg.info { background: #1f2937; opacity:.85;}
+.msg.info { background: #1f2937; opacity:.9;}
 .input-row {
   display: grid;
   grid-template-columns: 1fr auto auto;

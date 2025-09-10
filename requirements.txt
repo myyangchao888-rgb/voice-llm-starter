@@ -9,8 +9,11 @@ numpy==2.0.1
 pydub==0.25.1
 soundfile==0.12.1
 # Optional ASR backends:
-# faster-whisper requires CTranslate2 & ffmpeg (install separately)
 faster-whisper==1.0.3
-# Optional: edge-tts for cloud TTS (Microsoft Edge), not used by default
-edge-tts==6.1.12
+# Optional TTS
 pyttsx3==2.90
+# RAG:
+faiss-cpu==1.8.0.post1
+sentence-transformers==3.0.1
+pypdf==4.3.1
+python-multipart==0.0.9

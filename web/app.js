@@ -8,11 +8,17 @@ const providerSel = document.getElementById('provider');
 const modelInput = document.getElementById('model');
 const asrSel = document.getElementById('asr');
 const ttsSel = document.getElementById('tts');
+const kbChk = document.getElementById('kb');
+const kbTopkInput = document.getElementById('kb_topk');
+const filesInput = document.getElementById('files');
+const ingestBtn = document.getElementById('ingest');
+const ingestStatus = document.getElementById('ingest-status');
 const player = document.getElementById('player');
 
 let ws;
 let mediaRecorder;
 let chunks = [];
+let currentBotDiv = null;
 
 function ensureWS() {
   if (ws && ws.readyState === WebSocket.OPEN) return;
@@ -30,7 +36,6 @@ function ensureWS() {
     } else if (data.type === 'final') {
       finishBotMessage(data.text);
     } else if (data.type === 'audio_chunk') {
-      // one-shot WAV for now
       const b64 = data.data;
       const buf = base64ToArrayBuffer(b64);
       const blob = new Blob([buf], { type: data.mime || 'audio/wav' });
@@ -49,7 +54,6 @@ function addMsg(who, text, cls='bot') {
   log.scrollTop = log.scrollHeight;
 }
 
-let currentBotDiv = null;
 function appendBotPartial(text) {
   if (!currentBotDiv) {
     currentBotDiv = document.createElement('div');
@@ -62,9 +66,7 @@ function appendBotPartial(text) {
 }
 
 function finishBotMessage(finalText) {
-  if (!currentBotDiv) {
-    appendBotPartial('');
-  }
+  if (!currentBotDiv) appendBotPartial('');
   currentBotDiv.textContent = '助手: ' + finalText;
   currentBotDiv = null;
   log.scrollTop = log.scrollHeight;
@@ -74,9 +76,7 @@ function base64ToArrayBuffer(base64) {
   const binary_string = window.atob(base64);
   const len = binary_string.length;
   const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binary_string.charCodeAt(i);
-  }
+  for (let i = 0; i < len; i++) bytes[i] = binary_string.charCodeAt(i);
   return bytes.buffer;
 }
 
@@ -88,6 +88,8 @@ applyBtn.addEventListener('click', () => {
     model: modelInput.value || undefined,
     asr: asrSel.value,
     tts: ttsSel.value,
+    kb: kbChk.checked,
+    kb_topk: Number(kbTopkInput.value || 4)
   };
   ws.send(JSON.stringify(msg));
 });
@@ -101,9 +103,7 @@ sendBtn.addEventListener('click', () => {
 });
 
 input.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    sendBtn.click();
-  }
+  if (e.key === 'Enter') sendBtn.click();
 });
 
 resetBtn.addEventListener('click', () => {
@@ -114,13 +114,10 @@ resetBtn.addEventListener('click', () => {
 recordBtn.addEventListener('click', async () => {
   ensureWS();
   if (!mediaRecorder || mediaRecorder.state === 'inactive') {
-    // start recording
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
     chunks = [];
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) chunks.push(e.data);
-    };
+    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
     mediaRecorder.onstop = async () => {
       const blob = new Blob(chunks, { type: 'audio/webm' });
       const b64 = await blobToBase64(blob);
@@ -130,7 +127,6 @@ recordBtn.addEventListener('click', async () => {
     mediaRecorder.start();
     recordBtn.textContent = '■ 结束录音';
   } else {
-    // stop recording
     mediaRecorder.stop();
     recordBtn.textContent = '🎤 按一下开始/结束';
   }
@@ -140,14 +136,32 @@ function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
-      const dataUrl = reader.result; // data:audio/webm;base64,....
-      const b64 = dataUrl.split(',')[1];
-      resolve(b64);
+      const dataUrl = reader.result;
+      resolve(dataUrl.split(',')[1]);
     };
     reader.onerror = (err) => reject(err);
     reader.readAsDataURL(blob);
   });
 }
 
-// init connection
+ingestBtn.addEventListener('click', async () => {
+  const files = filesInput.files;
+  if (!files || files.length === 0) {
+    ingestStatus.textContent = '请选择文件';
+    return;
+  }
+  const form = new FormData();
+  for (const f of files) form.append('files', f, f.name);
+  ingestStatus.textContent = '上传中...';
+  try {
+    const resp = await fetch('/api/kb/ingest', { method: 'POST', body: form });
+    const data = await resp.json();
+    if (data.ok) ingestStatus.textContent = `已导入分片：${data.added_chunks}`;
+    else ingestStatus.textContent = '导入失败';
+  } catch (e) {
+    ingestStatus.textContent = '网络错误';
+  }
+});
+
+// init
 ensureWS();
