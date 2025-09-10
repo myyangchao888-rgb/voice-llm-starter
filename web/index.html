@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Voice LLM Starter v0.5</title>
+  <link rel="stylesheet" href="/web/style.css"/>
+</head>
+<body>
+  <div class="container">
+    <h1>Voice LLM Starter v0.5</h1>
+    <p>基于 HTML 的实时（近实时）语音对话 Demo。支持阿里云（DashScope OpenAI 兼容）、OpenAI、Ollama/LM Studio 等。</p>
+
+    <div class="controls">
+      <label>Provider
+        <select id="provider">
+          <option value="aliyun">Aliyun (DashScope)</option>
+          <option value="openai">OpenAI</option>
+          <option value="ollama">Ollama (local)</option>
+          <option value="lmstudio">LM Studio (local)</option>
+        </select>
+      </label>
+      <label>Model <input id="model" placeholder="qwen-turbo / gpt-4o-mini / llama3..."/></label>
+      <label>ASR
+        <select id="asr">
+          <option value="faster_whisper">faster_whisper (local)</option>
+          <option value="openai">OpenAI Whisper (cloud)</option>
+        </select>
+      </label>
+      <label>TTS
+        <select id="tts">
+          <option value="pyttsx3">pyttsx3 (local)</option>
+        </select>
+      </label>
+      <button id="apply">应用设置</button>
+      <button id="reset">重置会话</button>
+    </div>
+
+    <div class="chat">
+      <div id="log"></div>
+    </div>
+
+    <div class="input-row">
+      <input id="text" placeholder="输入文字后按 Enter 发送；或点击🎤开始录音"/>
+      <button id="send">发送</button>
+      <button id="record">🎤 按一下开始/结束</button>
+    </div>
+
+    <audio id="player" controls></audio>
+  </div>
+
+  <script src="/web/app.js"></script>
+</body>
+</html>
