@@ -47,6 +47,20 @@
 - `KB_CHUNK_SIZE` / `KB_CHUNK_OVERLAP`
 - `FASTER_WHISPER_MODEL` 等
 
+### 调用阿里云 NPL 模型
+
+1. 在 [DashScope](https://dashscope.aliyun.com/) 申请 API Key。
+2. 在 `.env` 设置：
+
+   ```env
+   DEFAULT_PROVIDER=aliyun
+   ALIYUN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+   ALIYUN_API_KEY=你的Key
+   DEFAULT_MODEL=qwen-turbo
+   ```
+
+3. 重启服务后即可通过通义千问模型进行对话。
+
 ## 目录说明
 
 - `server/`：FastAPI 服务端实现
